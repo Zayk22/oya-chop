@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+````markdown
+# Oya Chop
 
-## Getting Started
+> Oya, let's chop.
 
-First, run the development server:
+A food delivery web app for Lagos. Browse restaurants by cuisine, order,
+pay, and track your delivery. Each restaurant gets a dashboard to see
+incoming orders and move them through statuses.
+
+Built as a portfolio project by two developers learning full-stack
+development in public.
+
+---
+
+## Status
+
+🚧 In active development. Not yet deployed.
+
+Track progress: this README grows with the project. See `src/README.md`
+for the internal folder structure and who owns what.
+
+---
+
+## Stack
+
+- **Framework:** Next.js 16 (App Router) + TypeScript
+- **Styling:** Tailwind CSS v4
+- **Database:** Neon (serverless Postgres)
+- **ORM:** Drizzle
+- **Auth:** Clerk
+- **Payments:** Paystack (test mode)
+- **Deploy:** Vercel
+
+All tools on free tiers. No paid services.
+
+---
+
+## Running locally
+
+**Prerequisites:** Node.js 20.9 or higher, npm.
 
 ```bash
+# 1. Clone
+git clone https://github.com/Zayk22/oya-chop.git
+cd oya-chop
+
+# 2. Install
+npm install
+
+# 3. Environment
+copy .env.example .env.local
+# Open .env.local and fill in the values. Ask a team member
+# for the dev credentials — they are never committed.
+
+# 4. Run
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project structure
 
-## Learn More
+```
+src/
+  app/         Pages and layouts (Next.js App Router)
+  components/  Reusable UI pieces
+  db/          Schema, client, queries, seed
+  actions/     Server Actions (data mutations)
+  lib/         Helpers (formatting, constants, cart state, Paystack)
+  types/       Shared TypeScript types — the frontend/backend contract
+```
 
-To learn more about Next.js, take a look at the following resources:
+See `src/README.md` for ownership and conventions.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Contributing
 
-## Deploy on Vercel
+This is a two-person project. Work happens on feature branches. `main`
+is protected. See the Project Handbook for the full collaboration rules.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+Private project. Not for redistribution.
+````
