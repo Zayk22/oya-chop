@@ -1,26 +1,94 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   OYA CHOP — THEME TOKENS
+   ------------------------------------------------------------
+   Tailwind v4 reads this @theme block and generates utility
+   classes from every token. So:
+     --color-chili: #D9381E  →  bg-chili, text-chili, border-chili
+     --font-heading: ...     →  font-heading
+     --radius-card: 1rem     →  rounded-card
+     --shadow-card: ...      →  shadow-card
+
+   Change a value once here. Every usage on the site updates.
+   ============================================================ */
+
+@theme {
+  /* --- Colors --- */
+  --color-background: #FAF6F0;   /* warm off-white, page background */
+  --color-surface:    #FFFFFF;   /* cards sitting on the background */
+  --color-surface-alt:#F3EDE4;   /* soft tinted panels, alternate sections */
+
+  --color-ink:        #1F1A17;   /* warm near-black — main text */
+  --color-ink-muted:  #6B5F55;   /* secondary text, captions */
+  --color-ink-subtle: #A99F94;   /* placeholder, disabled text */
+
+  --color-chili:      #D9381E;   /* primary — buttons, price, brand */
+  --color-chili-dark: #B02A14;   /* hover / active state for primary */
+  --color-green:      #1F6B4F;   /* secondary — success, "open now" tags */
+  --color-mustard:    #F2B134;   /* accent — highlights, logo dot */
+
+  --color-border:     #E8DFD2;   /* soft warm neutral for hairlines */
+  --color-border-strong: #D6CBB9;
+
+  /* --- Fonts ---
+     The two variables below are set by next/font in layout.tsx.
+     Do not hardcode font names here — swap them at the layout level. */
+  --font-heading: var(--font-bricolage);
+  --font-sans:    var(--font-dm-sans);
+
+  /* --- Radius ---
+     One radius per role. Do not sprinkle arbitrary values inline. */
+  --radius-chip:  999px;   /* pills, tags, avatars */
+  --radius-input: 0.75rem; /* buttons, inputs */
+  --radius-card:  1rem;    /* menu items, order cards */
+  --radius-panel: 1.5rem;  /* big surfaces like the cart sheet */
+
+  /* --- Shadows ---
+     One shadow style. Warm-tinted, not cold grey. */
+  --shadow-card: 0 1px 2px rgba(31, 26, 23, 0.04),
+                 0 8px 24px -12px rgba(31, 26, 23, 0.10);
+  --shadow-lift: 0 4px 12px rgba(31, 26, 23, 0.06),
+                 0 16px 40px -16px rgba(31, 26, 23, 0.14);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ============================================================
+   BASE — global element styles
+   ============================================================ */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";   /* DM Sans: nicer "a" and "l" */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;   /* tighter tracking on headings reads more confident */
+  line-height: 1.1;
+}
+
+/* Selection — use our brand color, not the browser default blue */
+::selection {
+  background-color: var(--color-mustard);
+  color: var(--color-ink);
+}
+
+/* Focus rings — visible, consistent, never removed */
+:focus-visible {
+  outline: 2px solid var(--color-chili);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Naira currency and any price text stays on brand */
+.price {
+  font-feature-settings: "tnum";   /* tabular numbers — prices align vertically */
 }
