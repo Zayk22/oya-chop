@@ -1,14 +1,12 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 /* ============================================================
    FONTS
-   ------------------------------------------------------------
-   next/font downloads the font files at build time and serves
-   them from our own domain. No request goes to Google at runtime,
-   no layout shift, no external dependency.
    ============================================================ */
 
 const bricolage = Bricolage_Grotesque({
@@ -27,10 +25,6 @@ const dmSans = DM_Sans({
 
 /* ============================================================
    METADATA
-   ------------------------------------------------------------
-   The template in `title` means any child page that exports
-   its own metadata title renders as "Page name | Oya Chop".
-   Pages that don't export a title fall back to the default.
    ============================================================ */
 
 export const metadata: Metadata = {
@@ -54,12 +48,12 @@ export const metadata: Metadata = {
 /* ============================================================
    ROOT LAYOUT
    ------------------------------------------------------------
-   Wraps every page. Sets the html class to include our two
-   font variables so Tailwind utilities and the base styles in
-   globals.css can reference them.
+   Wraps every page with Header + Footer inside ClerkProvider.
+   The <div className="flex-1"> between them makes the footer
+   stick to the bottom on short pages.
    ============================================================ */
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
@@ -67,7 +61,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider>
-          {children}
+          <Header />
+          <div className="flex-1">
+            {children}
+          </div>
+          <Footer />
         </ClerkProvider>
       </body>
     </html>
