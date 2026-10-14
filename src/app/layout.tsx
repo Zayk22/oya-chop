@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 /* ============================================================
    FONTS
@@ -46,6 +47,10 @@ export const metadata: Metadata = {
 
 /* ============================================================
    ROOT LAYOUT
+   ------------------------------------------------------------
+   Wraps every page with Header + Footer inside ClerkProvider.
+   The <div className="flex-1"> between them makes the footer
+   stick to the bottom on short pages.
    ============================================================ */
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -60,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex-1">
             {children}
           </div>
+          <Footer />
         </ClerkProvider>
       </body>
     </html>
