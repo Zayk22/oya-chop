@@ -1,14 +1,11 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
+import { Header } from "@/components/Header";
 
 /* ============================================================
    FONTS
-   ------------------------------------------------------------
-   next/font downloads the font files at build time and serves
-   them from our own domain. No request goes to Google at runtime,
-   no layout shift, no external dependency.
    ============================================================ */
 
 const bricolage = Bricolage_Grotesque({
@@ -27,10 +24,6 @@ const dmSans = DM_Sans({
 
 /* ============================================================
    METADATA
-   ------------------------------------------------------------
-   The template in `title` means any child page that exports
-   its own metadata title renders as "Page name | Oya Chop".
-   Pages that don't export a title fall back to the default.
    ============================================================ */
 
 export const metadata: Metadata = {
@@ -53,10 +46,6 @@ export const metadata: Metadata = {
 
 /* ============================================================
    ROOT LAYOUT
-   ------------------------------------------------------------
-   Wraps every page. Sets the html class to include our two
-   font variables so Tailwind utilities and the base styles in
-   globals.css can reference them.
    ============================================================ */
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -67,7 +56,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider>
-          {children}
+          <Header />
+          <div className="flex-1">
+            {children}
+          </div>
         </ClerkProvider>
       </body>
     </html>
