@@ -4,21 +4,25 @@ import { Skeleton } from '@/components/Skeleton'
 import { formatNaira, formatRelativeTime } from '@/lib/format'
 
 /* ============================================================
-   TEMPORARY HOME PAGE
+   TEST DATA
    ------------------------------------------------------------
-   Shows components as we build them. Replaced in Phase 3.
+   Computed once at module load, outside the component.
+   React 19's purity rule forbids calling Date.now() during
+   render because the value would change on every render.
    ============================================================ */
 
-export default function HomePage() {
-  const testPrices = [0, 50000, 200000, 250000, 350000, 2500000]
-  const testTimes = [
-    new Date(Date.now() - 30 * 1000).toISOString(),        // just now
-    new Date(Date.now() - 5 * 60 * 1000).toISOString(),    // 5 min
-    new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours
-    new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString(), // yesterday
-    new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days
-  ]
+const TEST_PRICES = [0, 50000, 200000, 250000, 350000, 2500000]
 
+const NOW = Date.now()
+const TEST_TIMES = [
+  new Date(NOW - 30 * 1000).toISOString(),
+  new Date(NOW - 5 * 60 * 1000).toISOString(),
+  new Date(NOW - 3 * 60 * 60 * 1000).toISOString(),
+  new Date(NOW - 26 * 60 * 60 * 1000).toISOString(),
+  new Date(NOW - 4 * 24 * 60 * 60 * 1000).toISOString(),
+]
+
+export default function HomePage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center gap-10 px-4 py-12">
       <Logo />
@@ -84,7 +88,7 @@ export default function HomePage() {
         </p>
         <div className="bg-surface rounded-card shadow-card p-4">
           <ul className="flex flex-col gap-2 text-sm">
-            {testPrices.map((kobo) => (
+            {TEST_PRICES.map((kobo) => (
               <li key={kobo} className="flex justify-between border-b border-border last:border-0 pb-2 last:pb-0">
                 <span className="text-ink-muted">{kobo} kobo</span>
                 <span className="font-medium text-ink price">{formatNaira(kobo)}</span>
@@ -101,7 +105,7 @@ export default function HomePage() {
         </p>
         <div className="bg-surface rounded-card shadow-card p-4">
           <ul className="flex flex-col gap-2 text-sm">
-            {testTimes.map((iso) => (
+            {TEST_TIMES.map((iso) => (
               <li key={iso} className="flex justify-between border-b border-border last:border-0 pb-2 last:pb-0">
                 <span className="text-ink-muted">{new Date(iso).toLocaleString()}</span>
                 <span className="font-medium text-ink">{formatRelativeTime(iso)}</span>
