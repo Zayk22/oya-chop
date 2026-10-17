@@ -8,7 +8,7 @@ import {
 } from './schema'
 
 // All prices are in kobo: ₦3,500 = 350000.
-// imageUrl is '' until Dev A and you agree the filename convention (task 2.7b).
+// imageUrl points at files in public/images/vendors/<slug>.jpg
 
 type SeedItem = {
   name: string
@@ -22,6 +22,7 @@ type SeedVendor = {
   slug: string
   description: string
   cuisines: string[]
+  imageUrl: string
   deliveryEstimateMin: number
   deliveryFeeKobo: number
   isActive?: boolean
@@ -35,6 +36,7 @@ const data: SeedVendor[] = [
     description:
       'Home-style Nigerian soups and swallow, cooked the way mama makes it.',
     cuisines: ['Nigerian', 'Soups'],
+    imageUrl: '/images/vendors/mama-put-kitchen.jpg',
     deliveryEstimateMin: 40,
     deliveryFeeKobo: 150000,
     categories: [
@@ -81,6 +83,7 @@ const data: SeedVendor[] = [
     slug: 'lagos-jollof-house',
     description: 'Party jollof, fried rice and grilled chicken, all day.',
     cuisines: ['Nigerian', 'Rice'],
+    imageUrl: '/images/vendors/lagos-jollof-house.jpg',
     deliveryEstimateMin: 30,
     deliveryFeeKobo: 100000,
     categories: [
@@ -126,6 +129,7 @@ const data: SeedVendor[] = [
     slug: 'suya-spot',
     description: 'Spicy grilled suya, fresh off the fire with yaji.',
     cuisines: ['Grill', 'Suya'],
+    imageUrl: '/images/vendors/suya-spot.jpg',
     deliveryEstimateMin: 25,
     deliveryFeeKobo: 120000,
     categories: [
@@ -156,6 +160,7 @@ const data: SeedVendor[] = [
     slug: 'small-chops-corner',
     description: 'Puff puff, meat pies and party snacks.',
     cuisines: ['Snacks', 'Bakery'],
+    imageUrl: '/images/vendors/small-chops-corner.jpg',
     deliveryEstimateMin: 20,
     deliveryFeeKobo: 100000,
     isActive: false, // lets Dev A test the inactive-vendor state
@@ -195,6 +200,7 @@ async function main() {
         slug: v.slug,
         description: v.description,
         cuisines: v.cuisines,
+        imageUrl: v.imageUrl,
         deliveryEstimateMin: v.deliveryEstimateMin,
         deliveryFeeKobo: v.deliveryFeeKobo,
         isActive: v.isActive ?? true,
