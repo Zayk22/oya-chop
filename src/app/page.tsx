@@ -1,29 +1,45 @@
 import { Button } from '@/components/Button'
+import { VendorGrid } from '@/components/VendorGrid'
+import { VendorSearch } from '@/components/VendorSearch'
 import { EmptyState } from '@/components/EmptyState'
+import { mockVendors } from '@/lib/mock-data'
 
 /* ============================================================
-   HOME PAGE — placeholder for Phase 3
+   HOME PAGE — vendor grid with search
    ------------------------------------------------------------
-   A considered placeholder that shows the shape of the app
-   before real vendor data exists. Replaced in Phase 3 with the
-   real home: vendor grid, search, cuisine filter.
+   Reads searchParams from the URL. Filters mock vendors
+   locally for now. Task 3.7 replaces this with getVendors()
+   from src/db/queries.ts.
 
-   Layout:
-     1. Hero — asymmetric two-column (text left, preview card right)
-     2. Vendors — section heading + EmptyState
+   Server component. The only client part is <VendorSearch />.
    ============================================================ */
 
-export default function HomePage() {
+type HomePageProps = {
+  searchParams: Promise<{ q?: string; cuisine?: string }>
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const params = await searchParams
+  const q = (params.q ?? '').toLowerCase().trim()
+  const cuisine = params.cuisine ?? ''
+
+  let vendors = mockVendors.filter((v) => v.isActive)
+
+  if (q) {
+    vendors = vendors.filter((v) => v.name.toLowerCase().includes(q))
+  }
+
+  if (cuisine) {
+    vendors = vendors.filter((v) => v.cuisines.includes(cuisine))
+  }
+
   return (
     <main>
 
-      {/* ==================================================== */}
-      {/* HERO                                                 */}
-      {/* ==================================================== */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-20">
+      {/* HERO */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-16">
         <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-center">
 
-          {/* Left — text */}
           <div>
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-chip bg-surface-alt text-[11px] font-semibold text-ink-muted uppercase tracking-wider">
               <span
@@ -52,7 +68,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right — preview card (hidden on mobile) */}
           <div className="hidden lg:block">
             <div className="bg-surface rounded-panel shadow-lift overflow-hidden max-w-sm ml-auto">
               <div
@@ -82,25 +97,35 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ==================================================== */}
-      {/* VENDORS                                              */}
-      {/* ==================================================== */}
+      {/* VENDORS */}
       <section id="vendors" className="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
-        <div className="mb-8">
+        <div className="mb-6">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-ink">
             Restaurants
           </h2>
           <p className="text-ink-muted mt-1">
-            We&apos;re bringing your neighbourhood spots online.
+            Handpicked kitchens across Lagos.
           </p>
         </div>
 
-        <div className="bg-surface rounded-panel border border-border">
-          <EmptyState
-            title="Kitchens are loading"
-            description="Real menus, real prices, and same-day delivery — coming soon. Check back shortly."
-          />
+        <div className="mb-6">
+          <VendorSearch />
         </div>
+
+        {vendors.length === 0 ? (
+          <div className="bg-surface rounded-panel border border-border">
+            <EmptyState
+              title="Nothing here yet"
+              description={
+                q || cuisine
+                  ? 'No kitchens match those filters. Oya, try something else.'
+                  : 'Kitchens are loading. Check back shortly.'
+              }
+            />
+          </div>
+        ) : (
+          <VendorGrid vendors={vendors} />
+        )}
       </section>
 
     </main>
