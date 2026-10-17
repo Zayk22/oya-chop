@@ -1,66 +1,67 @@
 /* ============================================================
    MOCK DATA
    ------------------------------------------------------------
-   Fake data that matches the shapes in src/types/index.ts.
-   Used by Dev A to build UI before the real database exists.
-   Swapped out for real queries once Dev B's backend is ready.
-
-   Not used in production. Safe to delete at the end of Phase 3.
+   Mirrors the shape and content of the real seed in src/db/seed.ts.
+   Used by Dev A to build UI before real queries are wired up.
+   Swapped out in task 3.7 (pair) — replaced with getVendors() etc.
 
    Prices are in KOBO. ₦2,500 → 250000.
+   IDs match what the seed generates only conceptually — they're
+   placeholders. When the swap happens, real IDs come from Neon.
    ============================================================ */
 
 import type { Vendor, MenuCategory, MenuItem, OrderWithItems } from '@/types'
 
-/* ---------- Vendors ---------- */
+/* ---------- Vendors (mirror the four seed vendors) ---------- */
 
 export const mockVendors: Vendor[] = [
   {
-    id: 'vendor_mama_nkechi',
-    name: "Mama Nkechi's Kitchen",
-    slug: 'mama-nkechi',
-    description: 'Home-style Nigerian cooking, the way your mother would make it.',
-    cuisines: ['Nigerian', 'Home Cooked'],
-    imageUrl: '/images/vendors/mama-nkechi.jpg',
-    deliveryEstimateMin: 35,
-    deliveryFeeKobo: 50000,
-    isActive: true,
-    ownerClerkUserId: null,
-  },
-  {
-    id: 'vendor_suya_republic',
-    name: 'Suya Republic',
-    slug: 'suya-republic',
-    description: 'Charcoal-grilled suya, kilishi, and asun. Real Lagos night flavour.',
-    cuisines: ['Grills', 'Suya', 'Nigerian'],
-    imageUrl: '/images/vendors/suya-republic.jpg',
-    deliveryEstimateMin: 25,
-    deliveryFeeKobo: 70000,
-    isActive: true,
-    ownerClerkUserId: null,
-  },
-  {
-    id: 'vendor_chop_life',
-    name: 'Chop Life Shawarma',
-    slug: 'chop-life-shawarma',
-    description: 'Shawarma, small chops, and Chapman. Fast, fresh, filling.',
-    cuisines: ['Fast Food', 'Shawarma', 'Snacks'],
-    imageUrl: '/images/vendors/chop-life.jpg',
-    deliveryEstimateMin: 20,
-    deliveryFeeKobo: 40000,
-    isActive: true,
-    ownerClerkUserId: null,
-  },
-  {
-    id: 'vendor_ofada_palace',
-    name: 'Ofada Palace',
-    slug: 'ofada-palace',
-    description: 'Ofada rice and ayamase, pounded yam and egusi. Traditional cooking, no shortcuts.',
-    cuisines: ['Nigerian', 'Traditional'],
-    imageUrl: '/images/vendors/ofada-palace.jpg',
+    id: 'mock-vendor-mama-put',
+    name: 'Mama Put Kitchen',
+    slug: 'mama-put-kitchen',
+    description:
+      'Home-style Nigerian soups and swallow, cooked the way mama makes it.',
+    cuisines: ['Nigerian', 'Soups'],
+    imageUrl: '/images/vendors/mama-put-kitchen.jpg',
     deliveryEstimateMin: 40,
-    deliveryFeeKobo: 60000,
+    deliveryFeeKobo: 150000,
     isActive: true,
+    ownerClerkUserId: null,
+  },
+  {
+    id: 'mock-vendor-lagos-jollof',
+    name: 'Lagos Jollof House',
+    slug: 'lagos-jollof-house',
+    description: 'Party jollof, fried rice and grilled chicken, all day.',
+    cuisines: ['Nigerian', 'Rice'],
+    imageUrl: '/images/vendors/lagos-jollof-house.jpg',
+    deliveryEstimateMin: 30,
+    deliveryFeeKobo: 100000,
+    isActive: true,
+    ownerClerkUserId: null,
+  },
+  {
+    id: 'mock-vendor-suya-spot',
+    name: 'Suya Spot',
+    slug: 'suya-spot',
+    description: 'Spicy grilled suya, fresh off the fire with yaji.',
+    cuisines: ['Grill', 'Suya'],
+    imageUrl: '/images/vendors/suya-spot.jpg',
+    deliveryEstimateMin: 25,
+    deliveryFeeKobo: 120000,
+    isActive: true,
+    ownerClerkUserId: null,
+  },
+  {
+    id: 'mock-vendor-small-chops',
+    name: 'Small Chops Corner',
+    slug: 'small-chops-corner',
+    description: 'Puff puff, meat pies and party snacks.',
+    cuisines: ['Snacks', 'Bakery'],
+    imageUrl: '/images/vendors/small-chops-corner.jpg',
+    deliveryEstimateMin: 20,
+    deliveryFeeKobo: 100000,
+    isActive: false,
     ownerClerkUserId: null,
   },
 ]
@@ -68,215 +69,213 @@ export const mockVendors: Vendor[] = [
 /* ---------- Menu categories ---------- */
 
 export const mockCategories: MenuCategory[] = [
-  // Mama Nkechi
-  { id: 'cat_mn_rice', vendorId: 'vendor_mama_nkechi', name: 'Rice Dishes', sortOrder: 1 },
-  { id: 'cat_mn_sides', vendorId: 'vendor_mama_nkechi', name: 'Sides & Extras', sortOrder: 2 },
+  // Mama Put Kitchen
+  { id: 'cat-mama-put-1', vendorId: 'mock-vendor-mama-put', name: 'Soups & Swallow', sortOrder: 0 },
+  { id: 'cat-mama-put-2', vendorId: 'mock-vendor-mama-put', name: 'Sides', sortOrder: 1 },
 
-  // Suya Republic
-  { id: 'cat_sr_grills', vendorId: 'vendor_suya_republic', name: 'From The Grill', sortOrder: 1 },
-  { id: 'cat_sr_sides', vendorId: 'vendor_suya_republic', name: 'Sides', sortOrder: 2 },
+  // Lagos Jollof House
+  { id: 'cat-jollof-1', vendorId: 'mock-vendor-lagos-jollof', name: 'Rice Meals', sortOrder: 0 },
+  { id: 'cat-jollof-2', vendorId: 'mock-vendor-lagos-jollof', name: 'Drinks', sortOrder: 1 },
 
-  // Chop Life
-  { id: 'cat_cl_wraps', vendorId: 'vendor_chop_life', name: 'Wraps', sortOrder: 1 },
-  { id: 'cat_cl_drinks', vendorId: 'vendor_chop_life', name: 'Drinks', sortOrder: 2 },
+  // Suya Spot
+  { id: 'cat-suya-1', vendorId: 'mock-vendor-suya-spot', name: 'Grill', sortOrder: 0 },
 
-  // Ofada Palace
-  { id: 'cat_op_trad', vendorId: 'vendor_ofada_palace', name: 'Traditional', sortOrder: 1 },
-  { id: 'cat_op_swallow', vendorId: 'vendor_ofada_palace', name: 'Swallow', sortOrder: 2 },
+  // Small Chops Corner
+  { id: 'cat-chops-1', vendorId: 'mock-vendor-small-chops', name: 'Snacks', sortOrder: 0 },
 ]
 
 /* ---------- Menu items ---------- */
 
 export const mockItems: MenuItem[] = [
-  // Mama Nkechi — Rice Dishes
+  // Mama Put Kitchen — Soups & Swallow
   {
-    id: 'item_mn_jollof',
-    vendorId: 'vendor_mama_nkechi',
-    categoryId: 'cat_mn_rice',
-    name: 'Party Jollof Rice',
-    description: 'Smoky jollof with chicken, fried plantain, and coleslaw.',
-    priceKobo: 250000,
-    imageUrl: '/images/items/jollof.jpg',
-    isAvailable: true,
-  },
-  {
-    id: 'item_mn_ofada',
-    vendorId: 'vendor_mama_nkechi',
-    categoryId: 'cat_mn_rice',
-    name: 'Ofada Rice & Ayamase',
-    description: 'Local ofada rice with rich green pepper stew and assorted meat.',
-    priceKobo: 320000,
-    imageUrl: '/images/items/ofada.jpg',
-    isAvailable: true,
-  },
-  {
-    id: 'item_mn_fried',
-    vendorId: 'vendor_mama_nkechi',
-    categoryId: 'cat_mn_rice',
-    name: 'Fried Rice',
-    description: 'Vegetable fried rice with liver and boiled egg.',
-    priceKobo: 230000,
-    imageUrl: '/images/items/fried-rice.jpg',
-    isAvailable: true,
-  },
-  {
-    id: 'item_mn_moi',
-    vendorId: 'vendor_mama_nkechi',
-    categoryId: 'cat_mn_sides',
-    name: 'Moi Moi',
-    description: 'Steamed bean pudding, wrapped the old way.',
-    priceKobo: 50000,
-    imageUrl: '/images/items/moi-moi.jpg',
-    isAvailable: true,
-  },
-
-  // Suya Republic — Grills
-  {
-    id: 'item_sr_suya_beef',
-    vendorId: 'vendor_suya_republic',
-    categoryId: 'cat_sr_grills',
-    name: 'Beef Suya',
-    description: 'Spicy grilled beef skewers with onions, tomato, and yaji.',
-    priceKobo: 350000,
-    imageUrl: '/images/items/suya.jpg',
-    isAvailable: true,
-  },
-  {
-    id: 'item_sr_kilishi',
-    vendorId: 'vendor_suya_republic',
-    categoryId: 'cat_sr_grills',
-    name: 'Kilishi',
-    description: 'Dried spiced beef, Hausa style. Chewy, fiery, perfect.',
-    priceKobo: 400000,
-    imageUrl: '/images/items/kilishi.jpg',
-    isAvailable: true,
-  },
-  {
-    id: 'item_sr_asun',
-    vendorId: 'vendor_suya_republic',
-    categoryId: 'cat_sr_grills',
-    name: 'Asun',
-    description: 'Smoky peppered goat meat, chopped and tossed with scotch bonnet.',
+    id: 'item-mp-1',
+    vendorId: 'mock-vendor-mama-put',
+    categoryId: 'cat-mama-put-1',
+    name: 'Egusi Soup with Pounded Yam',
+    description: 'Melon seed soup with assorted meat and stockfish.',
     priceKobo: 450000,
-    imageUrl: '/images/items/asun.jpg',
-    isAvailable: false,  // example of an unavailable item
+    imageUrl: '',
+    isAvailable: true,
   },
   {
-    id: 'item_sr_plantain',
-    vendorId: 'vendor_suya_republic',
-    categoryId: 'cat_sr_sides',
-    name: 'Grilled Plantain',
-    description: 'Ripe plantain grilled over charcoal.',
-    priceKobo: 80000,
-    imageUrl: '/images/items/plantain.jpg',
+    id: 'item-mp-2',
+    vendorId: 'mock-vendor-mama-put',
+    categoryId: 'cat-mama-put-1',
+    name: 'Efo Riro with Eba',
+    description: 'Rich spinach stew with ponmo and goat meat.',
+    priceKobo: 380000,
+    imageUrl: '',
+    isAvailable: true,
+  },
+  {
+    id: 'item-mp-3',
+    vendorId: 'mock-vendor-mama-put',
+    categoryId: 'cat-mama-put-1',
+    name: 'Okra Soup with Amala',
+    description: 'Draw soup with fish and shaki.',
+    priceKobo: 400000,
+    imageUrl: '',
+    isAvailable: false,   // matches seed
+  },
+  {
+    id: 'item-mp-4',
+    vendorId: 'mock-vendor-mama-put',
+    categoryId: 'cat-mama-put-2',
+    name: 'Fried Plantain (Dodo)',
+    description: 'Sweet ripe plantain, fried golden.',
+    priceKobo: 100000,
+    imageUrl: '',
+    isAvailable: true,
+  },
+  {
+    id: 'item-mp-5',
+    vendorId: 'mock-vendor-mama-put',
+    categoryId: 'cat-mama-put-2',
+    name: 'Moi Moi',
+    description: 'Steamed bean pudding with egg.',
+    priceKobo: 120000,
+    imageUrl: '',
     isAvailable: true,
   },
 
-  // Chop Life — Wraps
+  // Lagos Jollof House — Rice Meals
   {
-    id: 'item_cl_chicken',
-    vendorId: 'vendor_chop_life',
-    categoryId: 'cat_cl_wraps',
-    name: 'Chicken Shawarma',
-    description: 'Grilled chicken, cabbage, sausage, and their secret sauce.',
-    priceKobo: 200000,
-    imageUrl: '/images/items/shawarma.jpg',
-    isAvailable: true,
-  },
-  {
-    id: 'item_cl_beef',
-    vendorId: 'vendor_chop_life',
-    categoryId: 'cat_cl_wraps',
-    name: 'Beef Shawarma',
-    description: 'Same wrap, beef version. Extra sauce on request.',
-    priceKobo: 220000,
-    imageUrl: '/images/items/beef-shawarma.jpg',
-    isAvailable: true,
-  },
-  {
-    id: 'item_cl_smallchops',
-    vendorId: 'vendor_chop_life',
-    categoryId: 'cat_cl_wraps',
-    name: 'Small Chops Platter',
-    description: 'Puff puff, samosa, spring roll, and peppered gizzard.',
-    priceKobo: 250000,
-    imageUrl: '/images/items/small-chops.jpg',
-    isAvailable: true,
-  },
-  {
-    id: 'item_cl_chapman',
-    vendorId: 'vendor_chop_life',
-    categoryId: 'cat_cl_drinks',
-    name: 'Chapman',
-    description: 'Chilled Chapman with cucumber, orange, and a cherry on top.',
-    priceKobo: 150000,
-    imageUrl: '/images/items/chapman.jpg',
-    isAvailable: true,
-  },
-
-  // Ofada Palace — Traditional
-  {
-    id: 'item_op_ayamase',
-    vendorId: 'vendor_ofada_palace',
-    categoryId: 'cat_op_trad',
-    name: 'Ayamase & Ofada Rice',
-    description: 'The full traditional plate. Green pepper stew, assorted meat, ofada rice.',
+    id: 'item-lj-1',
+    vendorId: 'mock-vendor-lagos-jollof',
+    categoryId: 'cat-jollof-1',
+    name: 'Party Jollof Rice & Chicken',
+    description: 'Smoky jollof with a grilled chicken thigh.',
     priceKobo: 350000,
-    imageUrl: '/images/items/ayamase.jpg',
+    imageUrl: '',
     isAvailable: true,
   },
   {
-    id: 'item_op_egusi',
-    vendorId: 'vendor_ofada_palace',
-    categoryId: 'cat_op_swallow',
-    name: 'Pounded Yam & Egusi',
-    description: 'Smooth pounded yam with rich egusi soup and goat meat.',
+    id: 'item-lj-2',
+    vendorId: 'mock-vendor-lagos-jollof',
+    categoryId: 'cat-jollof-1',
+    name: 'Fried Rice & Turkey',
+    description: 'Vegetable fried rice with peppered turkey.',
+    priceKobo: 420000,
+    imageUrl: '',
+    isAvailable: true,
+  },
+  {
+    id: 'item-lj-3',
+    vendorId: 'mock-vendor-lagos-jollof',
+    categoryId: 'cat-jollof-1',
+    name: 'Ofada Rice & Ayamase',
+    description: 'Local rice with green pepper stew and assorted meat.',
+    priceKobo: 420000,
+    imageUrl: '',
+    isAvailable: true,
+  },
+  {
+    id: 'item-lj-4',
+    vendorId: 'mock-vendor-lagos-jollof',
+    categoryId: 'cat-jollof-2',
+    name: 'Chapman',
+    description: 'Classic Nigerian fruit punch.',
+    priceKobo: 180000,
+    imageUrl: '',
+    isAvailable: true,
+  },
+  {
+    id: 'item-lj-5',
+    vendorId: 'mock-vendor-lagos-jollof',
+    categoryId: 'cat-jollof-2',
+    name: 'Zobo',
+    description: 'Chilled hibiscus drink with ginger.',
+    priceKobo: 80000,
+    imageUrl: '',
+    isAvailable: true,
+  },
+
+  // Suya Spot — Grill
+  {
+    id: 'item-ss-1',
+    vendorId: 'mock-vendor-suya-spot',
+    categoryId: 'cat-suya-1',
+    name: 'Beef Suya',
+    description: 'Thin-sliced beef, yaji spice, onions and tomatoes.',
+    priceKobo: 250000,
+    imageUrl: '',
+    isAvailable: true,
+  },
+  {
+    id: 'item-ss-2',
+    vendorId: 'mock-vendor-suya-spot',
+    categoryId: 'cat-suya-1',
+    name: 'Chicken Suya',
+    description: 'Grilled chicken with yaji and cabbage.',
     priceKobo: 300000,
-    imageUrl: '/images/items/pounded-yam-egusi.jpg',
+    imageUrl: '',
     isAvailable: true,
   },
   {
-    id: 'item_op_efo',
-    vendorId: 'vendor_ofada_palace',
-    categoryId: 'cat_op_swallow',
-    name: 'Eba & Efo Riro',
-    description: 'Eba with spicy spinach stew, locust beans, and ponmo.',
-    priceKobo: 280000,
-    imageUrl: '/images/items/efo-riro.jpg',
+    id: 'item-ss-3',
+    vendorId: 'mock-vendor-suya-spot',
+    categoryId: 'cat-suya-1',
+    name: 'Pepper Soup (Goat Meat)',
+    description: 'Hot and peppery broth with tender goat meat.',
+    priceKobo: 300000,
+    imageUrl: '',
+    isAvailable: true,
+  },
+
+  // Small Chops Corner — Snacks
+  {
+    id: 'item-sc-1',
+    vendorId: 'mock-vendor-small-chops',
+    categoryId: 'cat-chops-1',
+    name: 'Puff Puff (10 pcs)',
+    description: 'Soft fried dough balls, lightly sweet.',
+    priceKobo: 150000,
+    imageUrl: '',
+    isAvailable: true,
+  },
+  {
+    id: 'item-sc-2',
+    vendorId: 'mock-vendor-small-chops',
+    categoryId: 'cat-chops-1',
+    name: 'Meat Pie',
+    description: 'Flaky pastry with minced beef and potato.',
+    priceKobo: 100000,
+    imageUrl: '',
     isAvailable: true,
   },
 ]
 
-/* ---------- A sample order, for order-history UI ---------- */
+/* ---------- Sample order (for order-history UI later) ---------- */
 
 export const mockOrders: OrderWithItems[] = [
   {
-    id: 'order_mock_001',
-    customerId: 'user_mock_customer',
-    vendorId: 'vendor_mama_nkechi',
+    id: 'mock-order-001',
+    customerId: 'mock-user',
+    vendorId: 'mock-vendor-mama-put',
     status: 'delivered',
-    subtotalKobo: 500000,
-    deliveryFeeKobo: 50000,
-    totalKobo: 550000,
+    subtotalKobo: 900000,
+    deliveryFeeKobo: 150000,
+    totalKobo: 1050000,
     deliveryArea: 'Lekki',
     deliveryStreet: '12 Admiralty Way',
     phone: '08012345678',
-    paystackReference: 'mock_ref_001',
+    paystackReference: 'mock-ref-001',
     createdAt: '2026-10-10T18:30:00Z',
     updatedAt: '2026-10-10T19:15:00Z',
     vendor: {
-      id: 'vendor_mama_nkechi',
-      name: "Mama Nkechi's Kitchen",
-      slug: 'mama-nkechi',
-      imageUrl: '/images/vendors/mama-nkechi.jpg',
+      id: 'mock-vendor-mama-put',
+      name: 'Mama Put Kitchen',
+      slug: 'mama-put-kitchen',
+      imageUrl: '/images/vendors/mama-put-kitchen.jpg',
     },
     items: [
       {
-        id: 'oi_001',
-        orderId: 'order_mock_001',
-        menuItemId: 'item_mn_jollof',
-        nameSnapshot: 'Party Jollof Rice',
-        priceKoboSnapshot: 250000,
+        id: 'mock-oi-001',
+        orderId: 'mock-order-001',
+        menuItemId: 'item-mp-1',
+        nameSnapshot: 'Egusi Soup with Pounded Yam',
+        priceKoboSnapshot: 450000,
         quantity: 2,
       },
     ],
