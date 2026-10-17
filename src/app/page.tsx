@@ -1,15 +1,38 @@
 import { Button } from '@/components/Button'
 import { VendorGrid } from '@/components/VendorGrid'
+import { VendorSearch } from '@/components/VendorSearch'
+import { EmptyState } from '@/components/EmptyState'
 import { mockVendors } from '@/lib/mock-data'
 
 /* ============================================================
-   HOME PAGE — vendors grid
+   HOME PAGE — vendor grid with search
    ------------------------------------------------------------
-   Uses mock data in Phase 3 batch 3.1. Batch 3.7 swaps the
-   import to getVendors() from src/db/queries.ts.
+   Reads searchParams from the URL. Filters mock vendors
+   locally for now. Task 3.7 replaces this with getVendors()
+   from src/db/queries.ts.
+
+   Server component. The only client part is <VendorSearch />.
    ============================================================ */
 
-export default function HomePage() {
+type HomePageProps = {
+  searchParams: Promise<{ q?: string; cuisine?: string }>
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const params = await searchParams
+  const q = (params.q ?? '').toLowerCase().trim()
+  const cuisine = params.cuisine ?? ''
+
+  let vendors = mockVendors.filter((v) => v.isActive)
+
+  if (q) {
+    vendors = vendors.filter((v) => v.name.toLowerCase().includes(q))
+  }
+
+  if (cuisine) {
+    vendors = vendors.filter((v) => v.cuisines.includes(cuisine))
+  }
+
   return (
     <main>
 
@@ -76,7 +99,7 @@ export default function HomePage() {
 
       {/* VENDORS */}
       <section id="vendors" className="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
-        <div className="mb-8">
+        <div className="mb-6">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-ink">
             Restaurants
           </h2>
@@ -85,7 +108,24 @@ export default function HomePage() {
           </p>
         </div>
 
-        <VendorGrid vendors={mockVendors} />
+        <div className="mb-6">
+          <VendorSearch />
+        </div>
+
+        {vendors.length === 0 ? (
+          <div className="bg-surface rounded-panel border border-border">
+            <EmptyState
+              title="Nothing here yet"
+              description={
+                q || cuisine
+                  ? 'No kitchens match those filters. Oya, try something else.'
+                  : 'Kitchens are loading. Check back shortly.'
+              }
+            />
+          </div>
+        ) : (
+          <VendorGrid vendors={vendors} />
+        )}
       </section>
 
     </main>
