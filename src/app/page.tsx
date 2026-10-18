@@ -2,17 +2,17 @@ import { Button } from '@/components/Button'
 import { VendorGrid } from '@/components/VendorGrid'
 import { VendorSearch } from '@/components/VendorSearch'
 import { EmptyState } from '@/components/EmptyState'
-import { mockVendors } from '@/lib/mock-data'
+import { getVendors } from '@/db/queries'
 
 /* ============================================================
-   HOME PAGE — vendor grid with search
+   HOME PAGE — live data from Neon
    ------------------------------------------------------------
-   Reads searchParams from the URL. Filters mock vendors
-   locally for now. Task 3.7 replaces this with getVendors()
-   from src/db/queries.ts.
-
-   Server component. The only client part is <VendorSearch />.
+   Server component. Fetches vendors from the database on every
+   request (dynamic — see the `export const dynamic` below).
    ============================================================ */
+
+/* Force dynamic rendering so we always get fresh data from Neon */
+export const dynamic = 'force-dynamic'
 
 type HomePageProps = {
   searchParams: Promise<{ q?: string; cuisine?: string }>
@@ -20,18 +20,10 @@ type HomePageProps = {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams
-  const q = (params.q ?? '').toLowerCase().trim()
-  const cuisine = params.cuisine ?? ''
+  const q = params.q?.trim() || undefined
+  const cuisine = params.cuisine || undefined
 
-  let vendors = mockVendors.filter((v) => v.isActive)
-
-  if (q) {
-    vendors = vendors.filter((v) => v.name.toLowerCase().includes(q))
-  }
-
-  if (cuisine) {
-    vendors = vendors.filter((v) => v.cuisines.includes(cuisine))
-  }
+  const vendors = await getVendors({ q, cuisine })
 
   return (
     <main>
@@ -46,7 +38,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 className="w-1.5 h-1.5 rounded-full bg-mustard"
                 aria-hidden="true"
               />
-              Coming soon to Lagos
+              Now live in Lagos
             </span>
 
             <h1 className="mt-6 font-heading text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight text-ink">
