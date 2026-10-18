@@ -1,13 +1,15 @@
 import { notFound } from 'next/navigation'
 import { VendorHeader } from '@/components/VendorHeader'
-import { mockVendors } from '@/lib/mock-data'
+import { MenuList } from '@/components/MenuList'
+import { EmptyState } from '@/components/EmptyState'
+import { mockVendors, mockCategories, mockItems } from '@/lib/mock-data'
 
 /* ============================================================
    VENDOR PAGE
    ------------------------------------------------------------
    Dynamic route: /vendors/<slug>
-   Uses mock data in batch 3.3a. Batch 3.7 swaps to
-   getVendorBySlug() and getMenu() from src/db/queries.ts.
+   Uses mock data. Batch 3.10 swaps to getVendorBySlug() and
+   getMenu() from src/db/queries.ts.
    ============================================================ */
 
 type VendorPageProps = {
@@ -23,12 +25,24 @@ export default async function VendorPage({ params }: VendorPageProps) {
     notFound()
   }
 
+  const categories = mockCategories.filter((c) => c.vendorId === vendor.id)
+  const items = mockItems.filter((i) => i.vendorId === vendor.id)
+
   return (
     <main>
       <VendorHeader vendor={vendor} />
-      {/* Menu section goes here in batch 3.3b */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
-        <p className="text-ink-muted">Menu loading…</p>
+
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        {items.length === 0 ? (
+          <div className="bg-surface rounded-panel border border-border">
+            <EmptyState
+              title="No dishes yet"
+              description="This kitchen hasn't added anything to the menu. Check back soon."
+            />
+          </div>
+        ) : (
+          <MenuList categories={categories} items={items} />
+        )}
       </section>
     </main>
   )
