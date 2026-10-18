@@ -2,15 +2,16 @@ import { notFound } from 'next/navigation'
 import { VendorHeader } from '@/components/VendorHeader'
 import { MenuList } from '@/components/MenuList'
 import { EmptyState } from '@/components/EmptyState'
-import { mockVendors, mockCategories, mockItems } from '@/lib/mock-data'
+import { getVendorBySlug, getMenu } from '@/db/queries'
 
 /* ============================================================
-   VENDOR PAGE
+   VENDOR PAGE — live data from Neon
    ------------------------------------------------------------
-   Dynamic route: /vendors/<slug>
-   Uses mock data. Batch 3.10 swaps to getVendorBySlug() and
-   getMenu() from src/db/queries.ts.
+   Dynamic route /vendors/<slug>.
+   Two queries in parallel: vendor lookup + full menu.
    ============================================================ */
+
+export const dynamic = 'force-dynamic'
 
 type VendorPageProps = {
   params: Promise<{ slug: string }>
@@ -19,14 +20,13 @@ type VendorPageProps = {
 export default async function VendorPage({ params }: VendorPageProps) {
   const { slug } = await params
 
-  const vendor = mockVendors.find((v) => v.slug === slug)
+  const vendor = await getVendorBySlug(slug)
 
   if (!vendor) {
     notFound()
   }
 
-  const categories = mockCategories.filter((c) => c.vendorId === vendor.id)
-  const items = mockItems.filter((i) => i.vendorId === vendor.id)
+  const { categories, items } = await getMenu(vendor.id)
 
   return (
     <main>
