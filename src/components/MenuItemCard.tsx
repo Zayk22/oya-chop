@@ -1,25 +1,22 @@
 import { formatNaira } from '@/lib/format'
-import type { MenuItem } from '@/types'
+import { AddToCartButton } from './AddToCartButton'
+import type { MenuItem, Vendor } from '@/types'
 
 /* ============================================================
    MENU ITEM CARD
    ------------------------------------------------------------
-   One dish on a vendor menu. Photo, name, description, price,
-   and an add-to-cart button.
+   Server component. Renders the dish info and delegates the
+   interactive "Add" button to a small client component.
 
-   The button is a placeholder — Phase 4 wires it to real cart
-   state. Kept as a server component so every item doesn't ship
-   JS to the browser.
-
-   Unavailable items: dimmed image, "Sold out" badge, disabled
-   button.
+   Unavailable items: dimmed, "Sold out" badge, disabled button.
    ============================================================ */
 
 type MenuItemCardProps = {
   item: MenuItem
+  vendor: Pick<Vendor, 'id' | 'slug' | 'name'>
 }
 
-export function MenuItemCard({ item }: MenuItemCardProps) {
+export function MenuItemCard({ item, vendor }: MenuItemCardProps) {
   const unavailable = !item.isAvailable
 
   return (
@@ -28,7 +25,6 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
         unavailable ? 'opacity-60' : ''
       }`}
     >
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start gap-2">
           <h3 className="font-heading text-base font-bold text-ink leading-tight">
@@ -50,17 +46,10 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
             {formatNaira(item.priceKobo)}
           </span>
 
-          <button
-            type="button"
-            disabled={unavailable}
-            className="text-sm font-medium px-3 py-1.5 rounded-input border border-border text-ink-muted transition-colors hover:border-chili hover:text-chili disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-ink-muted"
-          >
-            {unavailable ? 'Unavailable' : 'Add'}
-          </button>
+          <AddToCartButton vendor={vendor} item={item} />
         </div>
       </div>
 
-      {/* Photo */}
       {item.imageUrl ? (
         <div className="w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-card overflow-hidden bg-surface-alt">
           {/* eslint-disable-next-line @next/next/no-img-element */}
