@@ -9,8 +9,7 @@ import { formatNaira } from '@/lib/format'
    CART PAGE
    ------------------------------------------------------------
    Client component — reads from CartProvider. Shows all items,
-   quantity controls, and subtotal. Checkout is disabled until
-   Paystack is wired in Batch 4.9.
+   quantity controls, and subtotal. Checkout navigates to /checkout.
    ============================================================ */
 
 export default function CartPage() {
@@ -164,17 +163,15 @@ export default function CartPage() {
             </span>
           </div>
 
-          <button
-            type="button"
-            disabled
-            className="mt-6 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-input bg-chili text-white font-medium text-base transition-colors hover:bg-chili-dark disabled:opacity-60 disabled:cursor-not-allowed"
-            title="Checkout will be enabled in a future update"
+          <Link
+            href="/checkout"
+            className="mt-6 w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-input bg-chili text-white font-medium text-base transition-colors hover:bg-chili-dark"
           >
             Checkout
-          </button>
+          </Link>
 
           <p className="text-xs text-ink-muted mt-3 text-center leading-relaxed">
-            Delivery fee and payment will be handled at checkout. Coming soon.
+            You&apos;ll enter your delivery details next.
           </p>
         </aside>
 
