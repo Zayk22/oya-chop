@@ -30,21 +30,30 @@ export async function createOrder(
   rawInput: CreateOrderInput
 ): Promise<CreateOrderResult> {
   try {
-    /* ---- 1. Auth ---- */
-    const { userId, sessionClaims } = await auth()
+       /* ---- 1. Auth ---- */
+    const { userId } = await auth()
 
     if (!userId) {
       return { success: false, error: 'You must be signed in to place an order.' }
     }
 
+    /* Fetch the user's primary email via Clerk backend. The JWT
+       doesn't include it by default (sessionClaims.email is usually
+       undefined), so we ask Clerk directly. */
+   const { clerkClient } = await import('@clerk/nextjs/server')
+const client = await clerkClient()
+const user = await client.users.getUser(userId)
     const email =
-      (sessionClaims?.email as string | undefined) ??
+      user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
+        ?.emailAddress ??
+      user.emailAddresses[0]?.emailAddress ??
       undefined
 
     if (!email) {
       return {
         success: false,
-        error: 'Your account has no email address. Please update it in your account settings.',
+        error:
+          'Your account has no email address. Please add one in your account settings before ordering.',
       }
     }
 
