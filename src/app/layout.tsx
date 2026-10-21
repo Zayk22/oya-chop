@@ -4,10 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-
-/* ============================================================
-   FONTS
-   ============================================================ */
+import { CartProvider } from "@/components/CartProvider";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -20,10 +17,6 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
 });
-
-/* ============================================================
-   METADATA
-   ============================================================ */
 
 export const metadata: Metadata = {
   title: {
@@ -43,14 +36,6 @@ export const metadata: Metadata = {
   },
 };
 
-/* ============================================================
-   ROOT LAYOUT
-   ------------------------------------------------------------
-   Wraps every page with Header + Footer inside ClerkProvider.
-   The <div className="flex-1"> between them makes the footer
-   stick to the bottom on short pages.
-   ============================================================ */
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -59,11 +44,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider>
-          <Header />
-          <div className="flex-1">
-            {children}
-          </div>
-          <Footer />
+          <CartProvider>
+            <Header />
+            <div className="flex-1">
+              {children}
+            </div>
+            <Footer />
+          </CartProvider>
         </ClerkProvider>
       </body>
     </html>
