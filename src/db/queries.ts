@@ -1,5 +1,5 @@
 import { and, asc, eq, ilike, sql } from 'drizzle-orm'
-import { db } from './client'
+import { getDb } from './client'
 import { vendors, menuCategories, menuItems } from './schema'
 import type { Vendor, MenuCategory, MenuItem } from '../types'
 
@@ -11,6 +11,7 @@ export async function getVendors({
   cuisine,
   q,
 }: { cuisine?: string; q?: string } = {}): Promise<Vendor[]> {
+  const db = getDb()
   const filters = [eq(vendors.isActive, true)]
 
   if (cuisine) {
@@ -29,6 +30,7 @@ export async function getVendors({
 
 // One vendor by slug, or null
 export async function getVendorBySlug(slug: string): Promise<Vendor | null> {
+  const db = getDb()
   const [vendor] = await db
     .select()
     .from(vendors)
@@ -40,8 +42,9 @@ export async function getVendorBySlug(slug: string): Promise<Vendor | null> {
 
 // Categories (sorted by sortOrder) and items for one vendor
 export async function getMenu(
-  vendorId: string,
+  vendorId: string
 ): Promise<{ categories: MenuCategory[]; items: MenuItem[] }> {
+  const db = getDb()
   const [categories, items] = await Promise.all([
     db
       .select()
