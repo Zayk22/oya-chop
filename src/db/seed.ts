@@ -1,4 +1,4 @@
-import { db } from './client'
+import { getDb } from './client'
 import {
   vendors,
   menuCategories,
@@ -163,7 +163,7 @@ const data: SeedVendor[] = [
     imageUrl: '/images/vendors/small-chops-corner.jpg',
     deliveryEstimateMin: 20,
     deliveryFeeKobo: 100000,
-    isActive: false, // lets Dev A test the inactive-vendor state
+    isActive: false,
     categories: [
       {
         name: 'Snacks',
@@ -185,6 +185,8 @@ const data: SeedVendor[] = [
 ]
 
 async function main() {
+  const db = getDb()
+
   console.log('Clearing old data...')
   await db.delete(orderItems)
   await db.delete(orders)
