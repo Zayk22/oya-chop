@@ -61,6 +61,8 @@ export async function initializePayment(
   if (!json.status) {
     throw new Error(`Paystack error: ${json.message ?? 'unknown'}`)
   }
+  
+  console.log('Paystack init response:', JSON.stringify(json.data, null, 2))
 
   return {
     authorizationUrl: json.data.authorization_url,
