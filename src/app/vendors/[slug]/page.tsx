@@ -4,13 +4,6 @@ import { MenuList } from '@/components/MenuList'
 import { EmptyState } from '@/components/EmptyState'
 import { getVendorBySlug, getMenu } from '@/db/queries'
 
-/* ============================================================
-   VENDOR PAGE — live data from Neon
-   ------------------------------------------------------------
-   Dynamic route /vendors/<slug>.
-   Two queries in parallel: vendor lookup + full menu.
-   ============================================================ */
-
 export const dynamic = 'force-dynamic'
 
 type VendorPageProps = {
@@ -41,7 +34,7 @@ export default async function VendorPage({ params }: VendorPageProps) {
             />
           </div>
         ) : (
-          <MenuList categories={categories} items={items} />
+          <MenuList categories={categories} items={items} vendor={vendor} />
         )}
       </section>
     </main>

@@ -1,20 +1,13 @@
 import { MenuItemCard } from './MenuItemCard'
-import type { MenuCategory, MenuItem } from '@/types'
-
-/* ============================================================
-   MENU LIST
-   ------------------------------------------------------------
-   Groups menu items by category and renders them. Categories
-   sorted by sortOrder. Items sorted by name.
-   ============================================================ */
+import type { MenuCategory, MenuItem, Vendor } from '@/types'
 
 type MenuListProps = {
   categories: MenuCategory[]
   items: MenuItem[]
+  vendor: Pick<Vendor, 'id' | 'slug' | 'name'>
 }
 
-export function MenuList({ categories, items }: MenuListProps) {
-  /* Group items by categoryId for fast lookup */
+export function MenuList({ categories, items, vendor }: MenuListProps) {
   const itemsByCategory = new Map<string, MenuItem[]>()
   for (const item of items) {
     const existing = itemsByCategory.get(item.categoryId) ?? []
@@ -22,7 +15,6 @@ export function MenuList({ categories, items }: MenuListProps) {
     itemsByCategory.set(item.categoryId, existing)
   }
 
-  /* Sort categories by sortOrder */
   const sortedCategories = [...categories].sort((a, b) => a.sortOrder - b.sortOrder)
 
   return (
@@ -41,7 +33,7 @@ export function MenuList({ categories, items }: MenuListProps) {
             </h2>
             <div>
               {categoryItems.map((item) => (
-                <MenuItemCard key={item.id} item={item} />
+                <MenuItemCard key={item.id} item={item} vendor={vendor} />
               ))}
             </div>
           </section>

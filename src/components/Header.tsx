@@ -1,22 +1,22 @@
+'use client'
+
 import Link from 'next/link'
 import { Show, UserButton } from '@clerk/nextjs'
 import { Logo } from './Logo'
+import { useCart } from './CartProvider'
 
 /* ============================================================
-   OYA CHOP — Header
+   HEADER
    ------------------------------------------------------------
-   Sticky top bar. Logo on the left, cart + auth on the right.
-
-   This is a SERVER component. Clerk's <Show> component wraps the
-   auth slot and decides what to render based on session state.
-   <UserButton> is a client-side widget Clerk manages internally —
-   we don't need 'use client' in this file.
-
-   Clerk Core 3 note: <SignedIn> and <SignedOut> were removed and
-   replaced by <Show when="signed-in" | "signed-out">.
+   Client component now because it reads the cart count from
+   context. Clerk's <Show> and <UserButton> work fine inside
+   client components.
    ============================================================ */
 
 export function Header() {
+  const { itemCount, hydrated } = useCart()
+  const showCount = hydrated && itemCount > 0
+
   return (
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
@@ -24,10 +24,9 @@ export function Header() {
 
         <div className="flex items-center gap-2">
 
-          {/* Cart — count is a placeholder until Phase 4 wires real state */}
           <Link
             href="/cart"
-            aria-label="Cart, empty"
+            aria-label={showCount ? `Cart, ${itemCount} items` : 'Cart, empty'}
             className="relative inline-flex items-center justify-center w-10 h-10 rounded-full text-ink transition-colors hover:bg-surface-alt"
           >
             <svg
@@ -45,15 +44,16 @@ export function Header() {
               <circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
-            <span
-              aria-hidden="true"
-              className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-chili text-white text-[11px] font-bold"
-            >
-              0
-            </span>
+            {showCount && (
+              <span
+                aria-hidden="true"
+                className="absolute -top-0.5 -right-0.5 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-chili text-white text-[11px] font-bold"
+              >
+                {itemCount > 9 ? '9+' : itemCount}
+              </span>
+            )}
           </Link>
 
-          {/* Auth — Clerk Core 3: one component, "when" prop decides which side renders */}
           <Show
             when="signed-in"
             fallback={
