@@ -5,6 +5,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartProvider } from "@/components/CartProvider";
+import { StickyCartBar } from "@/components/StickyCartBar";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -46,10 +47,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ClerkProvider>
           <CartProvider>
             <Header />
-            <div className="flex-1">
+            {/* pb-20 on mobile reserves space for the sticky cart bar */}
+            <div className="flex-1 pb-20 md:pb-0">
               {children}
             </div>
             <Footer />
+            <StickyCartBar />
           </CartProvider>
         </ClerkProvider>
       </body>
