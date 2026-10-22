@@ -5,14 +5,6 @@ import { Show, UserButton } from '@clerk/nextjs'
 import { Logo } from './Logo'
 import { useCart } from './CartProvider'
 
-/* ============================================================
-   HEADER
-   ------------------------------------------------------------
-   Client component now because it reads the cart count from
-   context. Clerk's <Show> and <UserButton> work fine inside
-   client components.
-   ============================================================ */
-
 export function Header() {
   const { itemCount, hydrated } = useCart()
   const showCount = hydrated && itemCount > 0
@@ -22,7 +14,17 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
         <Logo />
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 sm:gap-4">
+
+          {/* Orders link — signed-in only */}
+          <Show when="signed-in">
+            <Link
+              href="/orders"
+              className="text-sm font-medium text-ink-muted hover:text-ink transition-colors"
+            >
+              Orders
+            </Link>
+          </Show>
 
           <Link
             href="/cart"
