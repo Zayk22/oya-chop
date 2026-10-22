@@ -4,15 +4,12 @@ import Image from 'next/image'
 import { getOrder } from '@/db/queries'
 import { formatNaira, formatRelativeTime } from '@/lib/format'
 import { OrderTimeline } from '@/components/OrderTimeline'
+import { OrderPoller } from '@/components/OrderPoller'
 
 /* ============================================================
    ORDER TRACKING PAGE
    ------------------------------------------------------------
-   Server component. Shows order status, timeline, items, and
-   delivery details.
-
-   Authz handled by getOrder — returns null for foreign orders,
-   which triggers notFound() (looks identical to "doesn't exist").
+   Server component. Auto-refreshes every 10s via <OrderPoller>.
    ============================================================ */
 
 export const dynamic = 'force-dynamic'
@@ -46,7 +43,8 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
   return (
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
 
-      {/* Header */}
+      <OrderPoller status={order.status} />
+
       <div className="mb-6">
         <Link
           href="/orders"
@@ -62,7 +60,6 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
         </p>
       </div>
 
-      {/* Payment banner (only if there's a payment result to show) */}
       {payment && paymentMessages[payment] && (
         <div
           className={`mb-6 p-4 rounded-panel border text-sm ${
@@ -75,28 +72,24 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
         </div>
       )}
 
-      {/* Pending payment banner */}
       {isPending && (
         <div className="mb-6 p-4 rounded-panel border bg-surface-alt border-border text-sm text-ink">
           This order is awaiting payment confirmation. If you just paid, it may take a moment to update.
         </div>
       )}
 
-      {/* Cancelled banner */}
       {isCancelled && (
         <div className="mb-6 p-4 rounded-panel border bg-chili/10 border-chili/30 text-sm text-ink">
           This order was cancelled.
         </div>
       )}
 
-      {/* Status timeline */}
       {showTimeline && (
         <div className="bg-surface rounded-panel border border-border p-5 sm:p-6 mb-6">
           <OrderTimeline currentStatus={order.status} />
         </div>
       )}
 
-      {/* Vendor */}
       <Link
         href={`/vendors/${order.vendor.slug}`}
         className="flex items-center gap-4 bg-surface rounded-panel border border-border p-4 mb-6 hover:border-pink-soft transition-colors"
@@ -136,7 +129,6 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
         </svg>
       </Link>
 
-      {/* Items */}
       <div className="bg-surface rounded-panel border border-border p-5 sm:p-6 mb-6">
         <h2 className="font-heading text-lg font-bold text-ink mb-4">
           Items
@@ -175,7 +167,6 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
         </div>
       </div>
 
-      {/* Delivery details */}
       <div className="bg-surface rounded-panel border border-border p-5 sm:p-6 mb-6">
         <h2 className="font-heading text-lg font-bold text-ink mb-4">
           Delivery
@@ -194,7 +185,6 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
         </dl>
       </div>
 
-      {/* Reference */}
       <div className="text-xs text-ink-muted text-center">
         Reference: <span className="font-mono">{order.paystackReference}</span>
       </div>
