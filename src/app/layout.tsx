@@ -40,8 +40,6 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  /* Determine if the signed-in user owns a vendor. Null if
-     not signed in, or signed in but not a vendor. */
   const { userId } = await auth()
   const vendor = userId ? await getMyVendor() : null
   const hasVendor = !!vendor
@@ -52,10 +50,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${bricolage.variable} ${dmSans.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Skip link — keyboard users can Tab once to jump past the navbar */}
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
+
         <ClerkProvider>
           <CartProvider>
             <Header hasVendor={hasVendor} />
-            <div className="flex-1 pb-20 md:pb-0">
+            <div id="main-content" className="flex-1 pb-20 md:pb-0">
               {children}
             </div>
             <Footer />

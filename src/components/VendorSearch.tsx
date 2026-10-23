@@ -3,19 +3,6 @@
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-/* ============================================================
-   VENDOR SEARCH
-   ------------------------------------------------------------
-   Client component. Search input that writes the query string
-   to the URL. Server-side page reads the query and filters.
-
-   Why client: needs useState for input value, useEffect for
-   debouncing, and useRouter to update the URL.
-
-   Debounced 400ms — updates the URL only after the user has
-   stopped typing, so we don't spam the server on every keypress.
-   ============================================================ */
-
 const CUISINES = ['Nigerian', 'Rice', 'Soups', 'Grill', 'Suya', 'Snacks', 'Bakery']
 
 export function VendorSearch() {
@@ -29,7 +16,6 @@ export function VendorSearch() {
   const [q, setQ] = useState(initialQ)
   const [cuisine, setCuisine] = useState(initialCuisine)
 
-  /* Debounce the search term so we don't rewrite the URL on every keystroke */
   useEffect(() => {
     const timer = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString())
@@ -47,7 +33,6 @@ export function VendorSearch() {
     return () => clearTimeout(timer)
   }, [q, pathname, router, searchParams])
 
-  /* Cuisine change applies immediately */
   function handleCuisineChange(next: string) {
     setCuisine(next)
 
@@ -85,14 +70,16 @@ export function VendorSearch() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search kitchens…"
-          className="w-full pl-9 pr-3 py-2.5 rounded-input bg-surface border border-border text-ink text-sm placeholder:text-ink-subtle focus:outline-none focus:border-chili"
+          aria-label="Search kitchens by name"
+          className="w-full pl-9 pr-3 py-2.5 rounded-input bg-surface border border-border text-ink text-sm placeholder:text-ink-subtle focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
         />
       </div>
 
       <select
         value={cuisine}
         onChange={(e) => handleCuisineChange(e.target.value)}
-        className="px-3 py-2.5 rounded-input bg-surface border border-border text-ink text-sm focus:outline-none focus:border-chili"
+        aria-label="Filter by cuisine"
+        className="px-3 py-2.5 rounded-input bg-surface border border-border text-ink text-sm focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
       >
         <option value="">All cuisines</option>
         {CUISINES.map((c) => (
@@ -109,7 +96,7 @@ export function VendorSearch() {
             setCuisine('')
             router.replace(pathname, { scroll: false })
           }}
-          className="px-3 py-2.5 rounded-input text-sm text-ink-muted transition-colors hover:text-ink hover:bg-surface-alt"
+          className="px-3 py-2.5 rounded-input text-sm text-ink-muted transition-colors hover:text-ink hover:bg-surface-alt focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
         >
           Clear
         </button>
