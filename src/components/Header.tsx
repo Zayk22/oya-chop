@@ -5,7 +5,11 @@ import { Show, UserButton } from '@clerk/nextjs'
 import { Logo } from './Logo'
 import { useCart } from './CartProvider'
 
-export function Header() {
+type HeaderProps = {
+  hasVendor?: boolean
+}
+
+export function Header({ hasVendor = false }: HeaderProps) {
   const { itemCount, hydrated } = useCart()
   const showCount = hydrated && itemCount > 0
 
@@ -16,8 +20,15 @@ export function Header() {
 
         <div className="flex items-center gap-3 sm:gap-4">
 
-          {/* Orders link — signed-in only */}
           <Show when="signed-in">
+            {hasVendor && (
+              <Link
+                href="/dashboard"
+                className="text-sm font-medium text-ink-muted hover:text-ink transition-colors"
+              >
+                Dashboard
+              </Link>
+            )}
             <Link
               href="/orders"
               className="text-sm font-medium text-ink-muted hover:text-ink transition-colors"
