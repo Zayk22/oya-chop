@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toggleMenuItemAvailability } from '@/actions/vendor'
+import { deleteMenuItem } from '@/actions/menu'
 import { EditMenuItemModal } from './EditMenuItemModal'
 import { formatNaira } from '@/lib/format'
 import type { MenuCategory, MenuItem } from '@/types'
@@ -15,6 +16,7 @@ type MenuAvailabilityRowProps = {
 export function MenuAvailabilityRow({ item, categories }: MenuAvailabilityRowProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const unavailable = !item.isAvailable
@@ -28,6 +30,28 @@ export function MenuAvailabilityRow({ item, categories }: MenuAvailabilityRowPro
         setError(result.error)
         return
       }
+      router.refresh()
+    })
+  }
+
+  function handleDelete() {
+    const confirmed = window.confirm(
+      `Delete "${item.name}"? This cannot be undone.`
+    )
+    if (!confirmed) return
+
+    setError(null)
+    setIsDeleting(true)
+
+    startTransition(async () => {
+      const result = await deleteMenuItem(item.id)
+      setIsDeleting(false)
+
+      if (!result.success) {
+        setError(result.error)
+        return
+      }
+
       router.refresh()
     })
   }
@@ -55,6 +79,7 @@ export function MenuAvailabilityRow({ item, categories }: MenuAvailabilityRowPro
         <p className="price text-sm text-ink mt-1.5">
           {formatNaira(item.priceKobo)}
         </p>
+        {error && <p className="text-xs text-chili mt-2">{error}</p>}
       </div>
 
       <div className="flex items-center gap-3 shrink-0">
@@ -62,8 +87,17 @@ export function MenuAvailabilityRow({ item, categories }: MenuAvailabilityRowPro
 
         <button
           type="button"
+          onClick={handleDelete}
+          disabled={isPending || isDeleting}
+          className="text-xs text-ink-muted hover:text-chili transition-colors font-medium disabled:opacity-40"
+        >
+          {isDeleting ? 'Deleting…' : 'Delete'}
+        </button>
+
+        <button
+          type="button"
           onClick={handleToggle}
-          disabled={isPending}
+          disabled={isPending || isDeleting}
           aria-pressed={item.isAvailable}
           aria-label={
             item.isAvailable
@@ -81,8 +115,6 @@ export function MenuAvailabilityRow({ item, categories }: MenuAvailabilityRowPro
           />
         </button>
       </div>
-
-      {error && <p className="text-xs text-chili basis-full">{error}</p>}
     </div>
   )
 }

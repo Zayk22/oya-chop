@@ -271,3 +271,71 @@ export async function updateMenuItem(
     return { success: false, error: 'Failed to update item.' }
   }
 }
+/* ============================================================
+   DELETE
+   ============================================================ */
+
+export async function deleteMenuItem(
+  itemId: string
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const { userId } = await auth()
+    if (!userId) {
+      return { success: false, error: 'Not signed in.' }
+    }
+
+    const db = getDb()
+
+    /* Ownership */
+    const [vendor] = await db
+      .select()
+      .from(vendors)
+      .where(eq(vendors.ownerClerkUserId, userId))
+      .limit(1)
+
+    if (!vendor) {
+      return { success: false, error: 'You are not a vendor.' }
+    }
+
+    /* Load item and verify ownership */
+    const [existing] = await db
+      .select()
+      .from(menuItems)
+      .where(
+        and(
+          eq(menuItems.id, itemId),
+          eq(menuItems.vendorId, vendor.id)
+        )
+      )
+      .limit(1)
+
+    if (!existing) {
+      return { success: false, error: 'Item not found.' }
+    }
+
+    /* Attempt delete. If a foreign key constraint blocks it
+       (because the item has been ordered), catch and return a
+       friendly message. */
+    try {
+      await db.delete(menuItems).where(eq(menuItems.id, itemId))
+    } catch (err) {
+      /* Postgres foreign key violation has code 23503.
+         We can't easily check the code from Drizzle's error,
+         so we check the message. */
+      const message = err instanceof Error ? err.message : ''
+      if (message.includes('foreign key') || message.includes('violates')) {
+        return {
+          success: false,
+          error:
+            'This item has been ordered before and cannot be deleted. Mark it as sold out instead.',
+        }
+      }
+      throw err
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('deleteMenuItem error:', err)
+    return { success: false, error: 'Failed to delete item.' }
+  }
+}
