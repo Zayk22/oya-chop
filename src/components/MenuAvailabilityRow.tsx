@@ -3,21 +3,16 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { toggleMenuItemAvailability } from '@/actions/vendor'
+import { EditMenuItemModal } from './EditMenuItemModal'
 import { formatNaira } from '@/lib/format'
-import type { MenuItem } from '@/types'
-
-/* ============================================================
-   MENU AVAILABILITY ROW
-   ------------------------------------------------------------
-   One item in the vendor's menu management view. Toggle flips
-   availability via server action, then refreshes.
-   ============================================================ */
+import type { MenuCategory, MenuItem } from '@/types'
 
 type MenuAvailabilityRowProps = {
   item: MenuItem
+  categories: MenuCategory[]
 }
 
-export function MenuAvailabilityRow({ item }: MenuAvailabilityRowProps) {
+export function MenuAvailabilityRow({ item, categories }: MenuAvailabilityRowProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -43,7 +38,6 @@ export function MenuAvailabilityRow({ item }: MenuAvailabilityRowProps) {
         unavailable ? 'opacity-60' : ''
       }`}
     >
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start gap-2 flex-wrap">
           <h3 className="font-heading text-base font-bold text-ink leading-tight">
@@ -63,30 +57,32 @@ export function MenuAvailabilityRow({ item }: MenuAvailabilityRowProps) {
         </p>
       </div>
 
-      {/* Toggle */}
-      <button
-        type="button"
-        onClick={handleToggle}
-        disabled={isPending}
-        aria-pressed={item.isAvailable}
-        aria-label={
-          item.isAvailable ? `Mark ${item.name} as sold out` : `Mark ${item.name} as available`
-        }
-        className={`relative shrink-0 inline-flex items-center w-12 h-7 rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-          item.isAvailable ? 'bg-green' : 'bg-border'
-        }`}
-      >
-        <span
-          className={`inline-block w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
-            item.isAvailable ? 'translate-x-6' : 'translate-x-1'
-          }`}
-        />
-      </button>
+      <div className="flex items-center gap-3 shrink-0">
+        <EditMenuItemModal item={item} categories={categories} />
 
-      {/* Error */}
-      {error && (
-        <p className="text-xs text-chili basis-full">{error}</p>
-      )}
+        <button
+          type="button"
+          onClick={handleToggle}
+          disabled={isPending}
+          aria-pressed={item.isAvailable}
+          aria-label={
+            item.isAvailable
+              ? `Mark ${item.name} as sold out`
+              : `Mark ${item.name} as available`
+          }
+          className={`relative inline-flex items-center w-12 h-7 rounded-full transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
+            item.isAvailable ? 'bg-green' : 'bg-border'
+          }`}
+        >
+          <span
+            className={`inline-block w-5 h-5 rounded-full bg-white shadow-sm transition-transform ${
+              item.isAvailable ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
+      </div>
+
+      {error && <p className="text-xs text-chili basis-full">{error}</p>}
     </div>
   )
 }
