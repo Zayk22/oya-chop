@@ -181,3 +181,84 @@ export async function getMyOrders(): Promise<OrderWithItems[]> {
     }
   })
 }
+/* ============================================================
+   VENDOR READS (vendor-only, authz by ownership)
+   ============================================================ */
+
+/**
+ * Returns the vendor row for the signed-in user, or null if
+ * they don't own any vendor.
+ */
+export async function getMyVendor(): Promise<Vendor | null> {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  const db = getDb()
+  const [vendor] = await db
+    .select()
+    .from(vendors)
+    .where(eq(vendors.ownerClerkUserId, userId))
+    .limit(1)
+
+  return vendor ?? null
+}
+
+/**
+ * Returns orders for the signed-in vendor, newest first.
+ * Excludes pending_payment (those aren't real orders yet).
+ * Returns empty array if the user doesn't own a vendor.
+ */
+export async function getVendorOrders(): Promise<OrderWithItems[]> {
+  const { userId } = await auth()
+  if (!userId) return []
+
+  const db = getDb()
+
+  const [vendor] = await db
+    .select()
+    .from(vendors)
+    .where(eq(vendors.ownerClerkUserId, userId))
+    .limit(1)
+
+  if (!vendor) return []
+
+  const rows = await db
+    .select()
+    .from(orders)
+    .where(
+      and(
+        eq(orders.vendorId, vendor.id),
+        // Exclude unpaid orders from the vendor dashboard
+        sql`${orders.status} != 'pending_payment'`
+      )
+    )
+    .orderBy(desc(orders.createdAt))
+
+  if (rows.length === 0) return []
+
+  const orderIds = rows.map((r) => r.id)
+  const itemRows = await db
+    .select()
+    .from(orderItems)
+    .where(inArray(orderItems.orderId, orderIds))
+
+  const itemsByOrder = new Map<string, typeof itemRows>()
+  for (const item of itemRows) {
+    const existing = itemsByOrder.get(item.orderId) ?? []
+    existing.push(item)
+    itemsByOrder.set(item.orderId, existing)
+  }
+
+  return rows.map((order) => ({
+    ...order,
+    createdAt: order.createdAt.toISOString(),
+    updatedAt: order.updatedAt.toISOString(),
+    items: itemsByOrder.get(order.id) ?? [],
+    vendor: {
+      id: vendor.id,
+      name: vendor.name,
+      slug: vendor.slug,
+      imageUrl: vendor.imageUrl,
+    },
+  }))
+}
