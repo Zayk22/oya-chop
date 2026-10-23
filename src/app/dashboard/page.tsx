@@ -1,14 +1,11 @@
 import { getVendorOrders } from '@/db/queries'
-import { OrderHistoryRow } from '@/components/OrderHistoryRow'
+import { VendorOrderCard } from '@/components/VendorOrderCard'
 import { EmptyState } from '@/components/EmptyState'
 
 /* ============================================================
    DASHBOARD — Orders
    ------------------------------------------------------------
-   Placeholder for Batch 6.4. Currently renders order history
-   using the customer-side OrderHistoryRow component. Batch 6.4
-   replaces this with the proper vendor-specific UI (accept,
-   prepare, ready, deliver buttons).
+   Lists the vendor's orders with action buttons per status.
    ============================================================ */
 
 export const dynamic = 'force-dynamic'
@@ -17,13 +14,15 @@ export default async function DashboardPage() {
   const orders = await getVendorOrders()
 
   return (
-    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-6">
         <h1 className="font-heading text-3xl font-bold text-ink">
           Incoming orders
         </h1>
         <p className="text-ink-muted mt-1">
-          Orders for your vendor, newest first.
+          {orders.length === 0
+            ? 'Orders will appear here as they come in.'
+            : `${orders.length} ${orders.length === 1 ? 'order' : 'orders'} total.`}
         </p>
       </div>
 
@@ -35,9 +34,9 @@ export default async function DashboardPage() {
           />
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           {orders.map((order) => (
-            <OrderHistoryRow key={order.id} order={order} />
+            <VendorOrderCard key={order.id} order={order} />
           ))}
         </div>
       )}
