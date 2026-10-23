@@ -1,24 +1,13 @@
 import { getMyVendor, getMenu } from '@/db/queries'
 import { MenuAvailabilityRow } from '@/components/MenuAvailabilityRow'
+import { AddMenuItemModal } from '@/components/AddMenuItemModal'
 import { EmptyState } from '@/components/EmptyState'
-
-/* ============================================================
-   DASHBOARD — Menu Management
-   ------------------------------------------------------------
-   Lists all menu items grouped by category. Each item has a
-   toggle to mark available / sold out.
-   ============================================================ */
 
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardMenuPage() {
   const vendor = await getMyVendor()
-
-  /* Layout already guarantees vendor exists, but TypeScript
-     doesn't know that — defensive check. */
-  if (!vendor) {
-    return null
-  }
+  if (!vendor) return null
 
   const { categories, items } = await getMenu(vendor.id)
 
@@ -33,20 +22,23 @@ export default async function DashboardMenuPage() {
 
   return (
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <div className="mb-6">
-        <h1 className="font-heading text-3xl font-bold text-ink">
-          Menu availability
-        </h1>
-        <p className="text-ink-muted mt-1">
-          Toggle items off when they&apos;re sold out. Customers see the change immediately.
-        </p>
+      <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="font-heading text-3xl font-bold text-ink">
+            Menu availability
+          </h1>
+          <p className="text-ink-muted mt-1">
+            Toggle items off when sold out. Add or edit anytime.
+          </p>
+        </div>
+        <AddMenuItemModal categories={sortedCategories} />
       </div>
 
       {items.length === 0 ? (
         <div className="bg-surface rounded-panel border border-border">
           <EmptyState
             title="No menu items yet"
-            description="Your menu is empty. Add items to start selling."
+            description="Tap 'Add item' above to add your first dish."
           />
         </div>
       ) : (
@@ -62,7 +54,11 @@ export default async function DashboardMenuPage() {
                 </h2>
                 <div className="bg-surface rounded-panel border border-border px-5">
                   {categoryItems.map((item) => (
-                    <MenuAvailabilityRow key={item.id} item={item} />
+                    <MenuAvailabilityRow
+                      key={item.id}
+                      item={item}
+                      categories={sortedCategories}
+                    />
                   ))}
                 </div>
               </section>
