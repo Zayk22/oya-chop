@@ -1,19 +1,11 @@
 'use client'
 
-import { useState, useTransition, useRef } from 'react'
+import { useState, useTransition, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { updateMenuItem } from '@/actions/menu'
-import { formatNaira } from '@/lib/format'
+import { useFocusTrap } from '@/lib/useFocusTrap'
 import type { MenuCategory, MenuItem } from '@/types'
-
-/* ============================================================
-   EDIT MENU ITEM MODAL
-   ------------------------------------------------------------
-   Client component. Opens as overlay. Prefilled with the
-   item's current data. Image only uploads if the user picks
-   a new file — otherwise the existing imageUrl is preserved.
-   ============================================================ */
 
 type EditMenuItemModalProps = {
   item: MenuItem
@@ -27,19 +19,22 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
   const [error, setError] = useState<string | null>(null)
   const [newPreview, setNewPreview] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
 
-  function handleOpen() {
-    setIsOpen(true)
-    setError(null)
-    setNewPreview(null)
-  }
-
-  function handleClose() {
+  const handleClose = useCallback(() => {
     if (isPending) return
     setIsOpen(false)
     setError(null)
     setNewPreview(null)
     formRef.current?.reset()
+  }, [isPending])
+
+  useFocusTrap(modalRef, isOpen, handleClose)
+
+  function handleOpen() {
+    setIsOpen(true)
+    setError(null)
+    setNewPreview(null)
   }
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -79,7 +74,7 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
       <button
         type="button"
         onClick={handleOpen}
-        className="text-xs text-ink-muted hover:text-chili transition-colors font-medium"
+        className="text-xs text-ink-muted hover:text-chili transition-colors font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili rounded"
       >
         Edit
       </button>
@@ -90,11 +85,18 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
           onClick={handleClose}
         >
           <div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-item-title"
             className="bg-surface rounded-panel border border-border shadow-lift w-full max-w-md my-8"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-5 border-b border-border flex items-center justify-between">
-              <h2 className="font-heading text-lg font-bold text-ink">
+              <h2
+                id="edit-item-title"
+                className="font-heading text-lg font-bold text-ink"
+              >
                 Edit menu item
               </h2>
               <button
@@ -102,7 +104,7 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
                 onClick={handleClose}
                 disabled={isPending}
                 aria-label="Close"
-                className="w-8 h-8 rounded-full text-ink-muted hover:text-ink hover:bg-surface-alt transition-colors disabled:opacity-40"
+                className="w-8 h-8 rounded-full text-ink-muted hover:text-ink hover:bg-surface-alt transition-colors disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
               >
                 <svg
                   width="18"
@@ -136,7 +138,7 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
                   maxLength={80}
                   defaultValue={item.name}
                   disabled={isPending}
-                  className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili disabled:opacity-60"
+                  className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili disabled:opacity-60"
                 />
               </div>
 
@@ -152,7 +154,7 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
                   rows={2}
                   defaultValue={item.description}
                   disabled={isPending}
-                  className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili disabled:opacity-60 resize-none"
+                  className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili disabled:opacity-60 resize-none"
                 />
               </div>
 
@@ -171,7 +173,7 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
                     step={50}
                     defaultValue={priceNaira}
                     disabled={isPending}
-                    className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili disabled:opacity-60"
+                    className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili disabled:opacity-60"
                   />
                 </div>
                 <div>
@@ -184,7 +186,7 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
                     required
                     defaultValue={item.categoryId}
                     disabled={isPending}
-                    className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili disabled:opacity-60"
+                    className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili disabled:opacity-60"
                   >
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -227,7 +229,7 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
                   accept="image/jpeg,image/png,image/webp"
                   onChange={handleImageChange}
                   disabled={isPending}
-                  className="w-full text-sm text-ink-muted file:mr-3 file:py-2 file:px-3 file:rounded-input file:border-0 file:text-sm file:font-medium file:bg-surface-alt file:text-ink hover:file:bg-border transition-colors disabled:opacity-60"
+                  className="w-full text-sm text-ink-muted file:mr-3 file:py-2 file:px-3 file:rounded-input file:border-0 file:text-sm file:font-medium file:bg-surface-alt file:text-ink hover:file:bg-border transition-colors disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
                 />
                 <p className="text-xs text-ink-muted mt-1">
                   {item.imageUrl
@@ -237,7 +239,10 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
               </div>
 
               {error && (
-                <div className="p-3 rounded-input bg-chili/10 border border-chili/30 text-sm text-ink">
+                <div
+                  role="alert"
+                  className="p-3 rounded-input bg-chili/10 border border-chili/30 text-sm text-ink"
+                >
                   {error}
                 </div>
               )}
@@ -247,14 +252,14 @@ export function EditMenuItemModal({ item, categories }: EditMenuItemModalProps) 
                   type="button"
                   onClick={handleClose}
                   disabled={isPending}
-                  className="flex-1 px-4 py-2.5 rounded-input border border-border text-ink-muted text-sm font-medium transition-colors hover:text-ink disabled:opacity-60"
+                  className="flex-1 px-4 py-2.5 rounded-input border border-border text-ink-muted text-sm font-medium transition-colors hover:text-ink disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 px-4 py-2.5 rounded-input bg-chili text-white text-sm font-medium transition-colors hover:bg-chili-dark disabled:opacity-60"
+                  className="flex-1 px-4 py-2.5 rounded-input bg-chili text-white text-sm font-medium transition-colors hover:bg-chili-dark disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
                 >
                   {isPending ? 'Saving…' : 'Save changes'}
                 </button>

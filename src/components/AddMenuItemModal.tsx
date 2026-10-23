@@ -1,17 +1,10 @@
 'use client'
 
-import { useState, useTransition, useRef } from 'react'
+import { useState, useTransition, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { createMenuItem } from '@/actions/menu'
+import { useFocusTrap } from '@/lib/useFocusTrap'
 import type { MenuCategory } from '@/types'
-
-/* ============================================================
-   ADD MENU ITEM MODAL
-   ------------------------------------------------------------
-   Client component. Opens as overlay. Form for name, price,
-   description, category, image. Submits FormData to
-   createMenuItem server action.
-   ============================================================ */
 
 type AddMenuItemModalProps = {
   categories: MenuCategory[]
@@ -23,6 +16,17 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
+
+  const handleClose = useCallback(() => {
+    if (isPending) return
+    setIsOpen(false)
+    setError(null)
+    formRef.current?.reset()
+  }, [isPending])
+
+  /* Focus trap active when modal is open */
+  useFocusTrap(modalRef, isOpen, handleClose)
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -38,18 +42,10 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
         return
       }
 
-      /* Success: close modal, reset form, refresh list */
       setIsOpen(false)
       formRef.current?.reset()
       router.refresh()
     })
-  }
-
-  function handleClose() {
-    if (isPending) return
-    setIsOpen(false)
-    setError(null)
-    formRef.current?.reset()
   }
 
   return (
@@ -57,7 +53,7 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-input bg-chili text-white text-sm font-medium transition-colors hover:bg-chili-dark"
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-input bg-chili text-white text-sm font-medium transition-colors hover:bg-chili-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
       >
         <svg
           width="16"
@@ -82,11 +78,18 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
           onClick={handleClose}
         >
           <div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="add-item-title"
             className="bg-surface rounded-panel border border-border shadow-lift w-full max-w-md my-8"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-5 border-b border-border flex items-center justify-between">
-              <h2 className="font-heading text-lg font-bold text-ink">
+              <h2
+                id="add-item-title"
+                className="font-heading text-lg font-bold text-ink"
+              >
                 Add menu item
               </h2>
               <button
@@ -94,7 +97,7 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
                 onClick={handleClose}
                 disabled={isPending}
                 aria-label="Close"
-                className="w-8 h-8 rounded-full text-ink-muted hover:text-ink hover:bg-surface-alt transition-colors disabled:opacity-40"
+                className="w-8 h-8 rounded-full text-ink-muted hover:text-ink hover:bg-surface-alt transition-colors disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
               >
                 <svg
                   width="18"
@@ -128,7 +131,7 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
                   maxLength={80}
                   disabled={isPending}
                   placeholder="Egusi Soup with Pounded Yam"
-                  className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm placeholder:text-ink-subtle focus:outline-none focus:border-chili disabled:opacity-60"
+                  className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm placeholder:text-ink-subtle focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili disabled:opacity-60"
                 />
               </div>
 
@@ -144,7 +147,7 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
                   rows={2}
                   disabled={isPending}
                   placeholder="Melon seed soup with assorted meat and stockfish."
-                  className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm placeholder:text-ink-subtle focus:outline-none focus:border-chili disabled:opacity-60 resize-none"
+                  className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm placeholder:text-ink-subtle focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili disabled:opacity-60 resize-none"
                 />
               </div>
 
@@ -163,7 +166,7 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
                     step={50}
                     disabled={isPending}
                     placeholder="3500"
-                    className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm placeholder:text-ink-subtle focus:outline-none focus:border-chili disabled:opacity-60"
+                    className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm placeholder:text-ink-subtle focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili disabled:opacity-60"
                   />
                 </div>
                 <div>
@@ -175,7 +178,7 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
                     name="categoryId"
                     required
                     disabled={isPending}
-                    className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili disabled:opacity-60"
+                    className="w-full px-3 py-2.5 rounded-input bg-background border border-border text-ink text-sm focus:outline-none focus:border-chili focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili disabled:opacity-60"
                   >
                     <option value="">Choose…</option>
                     {categories.map((c) => (
@@ -198,7 +201,7 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
                   accept="image/jpeg,image/png,image/webp"
                   required
                   disabled={isPending}
-                  className="w-full text-sm text-ink-muted file:mr-3 file:py-2 file:px-3 file:rounded-input file:border-0 file:text-sm file:font-medium file:bg-surface-alt file:text-ink hover:file:bg-border transition-colors disabled:opacity-60"
+                  className="w-full text-sm text-ink-muted file:mr-3 file:py-2 file:px-3 file:rounded-input file:border-0 file:text-sm file:font-medium file:bg-surface-alt file:text-ink hover:file:bg-border transition-colors disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
                 />
                 <p className="text-xs text-ink-muted mt-1">
                   JPEG, PNG, or WebP. Max 5MB.
@@ -206,7 +209,10 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
               </div>
 
               {error && (
-                <div className="p-3 rounded-input bg-chili/10 border border-chili/30 text-sm text-ink">
+                <div
+                  role="alert"
+                  className="p-3 rounded-input bg-chili/10 border border-chili/30 text-sm text-ink"
+                >
                   {error}
                 </div>
               )}
@@ -216,14 +222,14 @@ export function AddMenuItemModal({ categories }: AddMenuItemModalProps) {
                   type="button"
                   onClick={handleClose}
                   disabled={isPending}
-                  className="flex-1 px-4 py-2.5 rounded-input border border-border text-ink-muted text-sm font-medium transition-colors hover:text-ink disabled:opacity-60"
+                  className="flex-1 px-4 py-2.5 rounded-input border border-border text-ink-muted text-sm font-medium transition-colors hover:text-ink disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 px-4 py-2.5 rounded-input bg-chili text-white text-sm font-medium transition-colors hover:bg-chili-dark disabled:opacity-60"
+                  className="flex-1 px-4 py-2.5 rounded-input bg-chili text-white text-sm font-medium transition-colors hover:bg-chili-dark disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
                 >
                   {isPending ? 'Saving…' : 'Add item'}
                 </button>
