@@ -5,12 +5,7 @@ import { getOrder } from '@/db/queries'
 import { formatNaira, formatRelativeTime } from '@/lib/format'
 import { OrderTimeline } from '@/components/OrderTimeline'
 import { OrderPoller } from '@/components/OrderPoller'
-
-/* ============================================================
-   ORDER TRACKING PAGE
-   ------------------------------------------------------------
-   Server component. Auto-refreshes every 10s via <OrderPoller>.
-   ============================================================ */
+import { OrderStatusAnnouncer } from '@/components/OrderStatusAnnouncer'
 
 export const dynamic = 'force-dynamic'
 
@@ -44,6 +39,7 @@ export default async function OrderPage({ params, searchParams }: OrderPageProps
     <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
 
       <OrderPoller status={order.status} />
+      <OrderStatusAnnouncer status={order.status} />
 
       <div className="mb-6">
         <Link
