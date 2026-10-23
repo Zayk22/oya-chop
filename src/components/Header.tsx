@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 import { Show, UserButton } from '@clerk/nextjs'
 import { Logo } from './Logo'
@@ -12,6 +13,34 @@ type HeaderProps = {
 export function Header({ hasVendor = false }: HeaderProps) {
   const { itemCount, hydrated } = useCart()
   const showCount = hydrated && itemCount > 0
+
+  /* Close the mobile drawer on Escape key. Standard modal/drawer
+     behavior that keyboard users expect. */
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key !== 'Escape') return
+
+      const drawer = document.getElementById('navDrawer')
+      const toggle = document.getElementById('navToggle')
+      if (!drawer || !toggle) return
+
+      if (drawer.classList.contains('is-open')) {
+        drawer.classList.remove('is-open')
+        toggle.classList.remove('is-open')
+        toggle.setAttribute('aria-expanded', 'false')
+        toggle.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  const cartLabel = !hydrated
+    ? 'Cart'
+    : itemCount === 0
+    ? 'Cart, empty'
+    : `Cart, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}`
 
   return (
     <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
@@ -39,8 +68,8 @@ export function Header({ hasVendor = false }: HeaderProps) {
 
           <Link
             href="/cart"
-            aria-label={showCount ? `Cart, ${itemCount} items` : 'Cart, empty'}
-            className="relative inline-flex items-center justify-center w-10 h-10 rounded-full text-ink transition-colors hover:bg-surface-alt"
+            aria-label={cartLabel}
+            className="relative inline-flex items-center justify-center w-10 h-10 rounded-full text-ink transition-colors hover:bg-surface-alt focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
           >
             <svg
               width="20"
@@ -72,7 +101,7 @@ export function Header({ hasVendor = false }: HeaderProps) {
             fallback={
               <Link
                 href="/sign-in"
-                className="inline-flex items-center justify-center px-4 py-2 rounded-input bg-chili text-white text-sm font-medium transition-colors hover:bg-chili-dark"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-input bg-chili text-white text-sm font-medium transition-colors hover:bg-chili-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chili"
               >
                 Sign in
               </Link>
